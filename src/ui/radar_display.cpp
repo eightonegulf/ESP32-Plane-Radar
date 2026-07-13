@@ -25,6 +25,7 @@ uint16_t kColorGrid = 0x0320;
 uint16_t kColorLabel = 0xFFFF;
 uint16_t kColorCenter = 0xFFFF;
 uint16_t kColorAircraft = 0x001F;
+uint16_t kColorMilitaryAircraft = 0x001F;
 uint16_t kColorTrackVector = 0xFFFF;
 uint16_t kColorTagType = 0x5DFF;
 uint16_t kColorTagAltitude = 0xFFE0;
@@ -183,9 +184,13 @@ void initPalette() {
   if (config::kDisplayRgbOrder) {
     radar::kColorAircraft =
         tft.color565(radar::kAircraftB, radar::kAircraftG, radar::kAircraftR);
+    radar::kColorMilitaryAircraft =
+        tft.color565(radar::kMilitaryAircraftB, radar::kMilitaryAircraftG, radar::kMilitaryAircraftR);
   } else {
     radar::kColorAircraft =
         tft.color565(radar::kAircraftR, radar::kAircraftG, radar::kAircraftB);
+    radar::kColorMilitaryAircraft =
+        tft.color565(radar::kMilitaryAircraftR, radar::kMilitaryAircraftG, radar::kMilitaryAircraftB);
   }
   radar::kColorTrackVector =
       tft.color565(radar::kTrackR, radar::kTrackG, radar::kTrackB);
@@ -535,7 +540,11 @@ void drawAircraft() {
     const int y = items[d].y;
     drawSpeedVector(x, y, planes[i].nose_deg, planes[i].track_deg,
                     planes[i].gs_knots, radar::kColorTrackVector);
-    drawHeadingTriangle(x, y, planes[i].nose_deg, radar::kColorAircraft);
+    drawHeadingTriangle(x, y, planes[i].nose_deg, 
+      planes[i].isMilitary ? 
+        radar::kColorMilitaryAircraft : 
+        radar::kColorAircraft
+    );
   }
   for (size_t d = 0; d < draw_count; ++d) {
     const size_t i = items[d].index;
