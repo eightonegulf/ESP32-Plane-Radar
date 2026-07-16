@@ -272,9 +272,8 @@ bool beyondRingEdgeDotFromLatLon(float lat, float lon, int* out_x, int* out_y) {
   return true;
 }
 
-void drawBeyondRingDot(int x, int y) {
-  s_draw->fillSmoothCircle(x, y, radar::kBeyondRingDotRadiusPx,
-                           radar::kColorAircraft);
+void drawBeyondRingDot(int x, int y, uint16_t color) {
+  s_draw->fillSmoothCircle(x, y, radar::kBeyondRingDotRadiusPx, color);
 }
 
 void clipPointToOuterRing(int x0, int y0, int* x1, int* y1) {
@@ -458,6 +457,7 @@ struct AircraftDrawItem {
 };
 
 struct BeyondDotDrawItem {
+  size_t index = 0;
   int x = 0;
   int y = 0;
   int dist_sq = 0;
@@ -522,6 +522,7 @@ void drawAircraft() {
                                      &dot_y)) {
       continue;
     }
+    dots[dot_count].index = i;    
     dots[dot_count].x = dot_x;
     dots[dot_count].y = dot_y;
     dots[dot_count].dist_sq = distSqFromCenter(dot_x, dot_y);
@@ -530,7 +531,12 @@ void drawAircraft() {
 
   sortBeyondDotsFarFirst(dots, dot_count);
   for (size_t d = 0; d < dot_count; ++d) {
-    drawBeyondRingDot(dots[d].x, dots[d].y);
+    const size_t i = items[d].index;
+    drawBeyondRingDot(dots[d].x, dots[d].y,
+          planes[i].isMilitary ? 
+            radar::kColorMilitaryAircraft : 
+            radar::kColorAircraft
+    );
   }
 
   sortDrawItemsFarFirst(items, draw_count);
