@@ -95,6 +95,10 @@ bool readJsonFloat(const JsonObject& obj, const char* key, float* out) {
   return false;
 }
 
+bool isMilitary(const JsonObject& plane) {
+  return plane["dbFlags"].is<bool>() && plane["dbFlags"].as<bool>();
+}
+
 float pickNoseHeading(const JsonObject& plane) {
   float v = 0.0f;
   if (readJsonFloat(plane, "true_heading", &v)) {
@@ -270,6 +274,7 @@ bool fetchUpdate(double center_lat, double center_lon, float fetch_radius_km) {
     s_aircraft[n].nose_deg = pickNoseHeading(plane);
     s_aircraft[n].track_deg = pickTrackHeading(plane);
     s_aircraft[n].gs_knots = pickGroundSpeed(plane);
+    s_aircraft[n].isMilitary = isMilitary(plane);
     fillTagFields(&s_aircraft[n], plane);
     ++n;
   }
